@@ -1,5 +1,8 @@
-def main():
+import pickle
 
-    return 0 
-if __name__=="__main__":
-    main()
+arq = "entrada3.bin"
+
+with open(arq, "rb") as f:
+    dados = pickle.load(f)
+
+print(dados)
