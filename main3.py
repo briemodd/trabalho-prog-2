@@ -1,39 +1,30 @@
 import pickle
-import sys
-
-sys.setrecursionlimit(5000) 
+import time
 
 def calc_pontos(pontos_info, aluno_info):
-    
-    pontos_por_tipo = {} 
     lista_atividades = aluno_info[1]
+    pontos_tipo_1 = 0
+    pontos_tipo_2 = 0
+    pontos_tipo_3 = 0
+    pontos_tipo_4 = 0
 
-    # 1. Soma os pontos brutos por tipo
     for (tipo_id, cod_id, quant) in lista_atividades:
         chave_ponto = (tipo_id, cod_id)
-        
-        if chave_ponto not in pontos_info:
-            continue 
-            
-        pontos_da_atividade = pontos_info[chave_ponto][1] 
-        pontos_brutos = quant * pontos_da_atividade
-        pontos_por_tipo[tipo_id] = pontos_por_tipo.get(tipo_id, 0) + pontos_brutos
+        if chave_ponto in pontos_info:
+            pontos_da_atividade = pontos_info[chave_ponto][1] 
+            pontos_brutos = quant * pontos_da_atividade
+            if tipo_id == 1: pontos_tipo_1 += pontos_brutos
+            elif tipo_id == 2: pontos_tipo_2 += pontos_brutos
+            elif tipo_id == 3: pontos_tipo_3 += pontos_brutos
+            elif tipo_id == 4: pontos_tipo_4 += pontos_brutos
 
-    # 2. Aplica o limite de 10 pontos por tipo e soma
     pontuacao_total = 0
-    for tipo_id in pontos_por_tipo:
-        pontos_do_tipo = pontos_por_tipo[tipo_id]
-        
-        if pontos_do_tipo > 10:
-            pontuacao_total += 10 
-        else:
-            pontuacao_total += pontos_do_tipo
+    pontuacao_total += min(pontos_tipo_1, 10)
+    pontuacao_total += min(pontos_tipo_2, 10)
+    pontuacao_total += min(pontos_tipo_3, 10)
+    pontuacao_total += min(pontos_tipo_4, 10)
             
-    # 3. Aplica o limite total de 15 pontos 
-    if pontuacao_total > 15:
-        return 15
-    
-    return pontuacao_total
+    return min(pontuacao_total, 15)
 
 def compara_atividades(item_a, item_b, alunos, pontos_info):
     """
@@ -176,8 +167,8 @@ def salvar_saida(atividades_ordenadas, tipos, pontos, alunos):
             f.write(f"  {tipo_id}.{cod_id} {nome_atividade}: {quant}x{pontos_unitarios}={pontos_calculados}\n")
 
 def main():
-
-    arq_entrada = "entrada1.bin"
+    t1 = time.perf_counter()
+    arq_entrada = "entrada4.bin"
     
     # Leitura do arquivo binário [cite: 1223]
     with open(arq_entrada, "rb") as f:
@@ -192,7 +183,8 @@ def main():
     merge_sort(atividades, alunos, pontos)
     
     salvar_saida(atividades, tipos, pontos, alunos)
-    
+    t2 = time.perf_counter()
+    print("tempo merge: ", t2 - t1)
     print("Arquivo 'saida.txt' gerado com sucesso.")
 
 main()
