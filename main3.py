@@ -3,26 +3,21 @@ import time
 
 def calc_pontos(pontos_info, aluno_info, ntipos):
     lista_atividades = aluno_info[1]
-    pontos_tipo = [0] * (ntipos + 1)
+    pontuacao_tipo = [0] * (ntipos + 1)
 
     for (tipo_id, cod_id, quant) in lista_atividades:
         chave_ponto = (tipo_id, cod_id)
-        if chave_ponto in pontos_info:
-            pontos_da_atividade = pontos_info[chave_ponto][1] 
-            pontos_brutos = quant * pontos_da_atividade
-            if tipo_id == 1: pontos_tipo[0] += pontos_brutos
-            elif tipo_id == 2: pontos_tipo[1] += pontos_brutos
-            elif tipo_id == 3: pontos_tipo[2] += pontos_brutos
-            elif tipo_id == 4: pontos_tipo[3] += pontos_brutos
-
-    pontuacao_total = 0
-    pontuacao_total += min(pontos_tipo[0], 10)
-    pontuacao_total += min(pontos_tipo[1], 10)
-    pontuacao_total += min(pontos_tipo[2], 10)
-    pontuacao_total += min(pontos_tipo[3], 10)
-            
-    return min(pontuacao_total, 15)
-
+        pontuacao_tipo[tipo_id] += pontos_info[chave_ponto][1] * quant
+        
+    for i in range(len(pontuacao_tipo)):
+        if pontuacao_tipo[i] >= 10:
+            pontuacao_tipo[i] = 10
+        
+    if sum(pontuacao_tipo) >= 15:  
+        return 15
+    else: 
+        return sum(pontuacao_tipo)
+    
 def compara_atividades(item_a, item_b, alunos, pontos_info, ntipos):
 
     mat_a, idx_a = item_a
